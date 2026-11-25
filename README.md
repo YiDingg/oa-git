@@ -1,169 +1,75 @@
 # oa-git
 
-**Deterministic text serialization, semantic diff, object-level three-way merge, and Fail-Closed Git version control for Cadence OpenAccess (`sch.oa`, `symbol.oa`, and `layout.oa`) designs.**
+**Git-native version control for Cadence OpenAccess (`sch.oa`, `symbol.oa`, and `layout.oa`) designs.**
 
-`oa-git` is an MIT-licensed, lightweight, terminal-first, AI-agnostic tool that bridges Cadence Virtuoso OpenAccess CellViews and standard Git workflows—without ever parsing or reversing `.oa` binary files.
+`oa-git` translates Virtuoso OpenAccess CellViews into deterministic, human-readable text snapshots using **official documented Cadence SKILL APIs only**—never parsing or writing raw `.oa` binaries. Standard Git handles all commits, branches, PR reviews, and reverts.
 
-## Highlights
+## Features
 
-- **Out-of-the-Box `oagit init`**: Run `oagit init` inside any Virtuoso working directory containing `cds.lib` to automatically initialize Git, write a safe root-anchored `/<lib>/` `.gitignore` block, discover repo-local OA libraries (excluding Cadence built-ins, PDKs, `COMBINE`, and `Invisible` libraries), set a repo-local `allow_libraries` safety boundary, and detect `virtuoso` from `PATH` or `$CDSHOME`.
-- **Minimal 7-Command OA CLI**: Exposes only 7 OA-specific commands (`init`, `status`, `capture`, `diff`, `merge`, `restore`, `daemon`), delegating `commit` / `push` / `branch` / `checkout` / `revert` to native `git`. All commands automatically handle **Schematic + Symbol + Layout** (including custom layout view names such as `layout_pulsic`) via `view_contract.py`.
-- **Schematic (`sch.oa` -> `circuit.yaml` + `placement.yaml`)**: Deterministic canonical serialization with `params`/`derived` separation, multi-pass coupled CDF callback convergence (`--recompute-derived`), cross-instance shared CDF isolation, anonymous auto-net (`^net[0-9]+$`) bijection isomorphism, wide bus wires, annotation shapes, static PDK metadata filtering, and bounded `.cxt` crash retry (`exit 139`).
-- **Symbol (`symbol.oa` -> `symbol.yaml`)**: Full support for bus pins (`DOUTP<9:0>`, `S<2:0>`), `rect|pin:drawing` pin figures, `line`/`rect`/`polygon`/`path`/`arc`/`ellipse`/`circle`, `selection_box`, `origin`/`bBox`, `normalLabel`/`NLPLabel`/`ILLabel`, `portOrder` + `ILList` `termOrder`, 3-domain semantic diff (pin contract / pin geometry / graphics), and 3-way merge.
-- **Physical Layout (`layout.oa` -> `objects.jsonl` + `definitions.jsonl`)**: Supports all 15 physical OA object types (`net`, `pin`, `instance` incl. PCell params, `mosaic`, `via`, `rect`, `path_seg`, `path`, `polygon`, `ellipse`, `line`, `label`, `blockage`, `boundary`, `fig_group`), 3-domain semantic diff (Connectivity / Geometry / Annotation) with `--stat` and `--connectivity-only`, spatial-overlap-guarded 3-way merge (`--allow-spatial-overlap`), and atomic draft-and-publish restore with `pcell_verified` + `connectivity_verified` + `readback_verified`.
-- **Git-Like Ergonomics & Warm Headless Daemon**: Upward `.oagit/config.json` discovery, dynamic read-time `cds.lib` sync + `.gitignore` trap warnings in `oagit status`, `.oagit/index.json` dirty-file skip across all 3 views (`< 0.2s` with zero Virtuoso calls on `--changed`), single-session hierarchical batch (`--hier --include-symbols`), and lazy auto-sleep Virtuoso Daemon (`oagit-spool/1`, default `3600s` / 1-hour idle timeout, `0` disables idle auto-exit, native `ipcSleep(1)` idle backoff) with optional FD-detached SSH `ControlMaster`.
+- **3 OpenAccess Views**: Full capture, semantic diff, 3-way merge, and atomic restore for **Schematic** (`circuit.yaml` + `placement.yaml`), **Symbol** (`symbol.yaml`), and **Layout** (`objects.jsonl` + `definitions.jsonl`, all 15 OA physical object types).
+- **7-Command CLI + Native Git**: Only `init`, `status`, `capture`, `diff`, `merge`, `restore`, and `daemon`; everything else (`commit`, `push`, `branch`, `revert`) uses standard `git`.
+- **Domain-Separated Diff & Merge**: Separates electrical/connectivity truth from placement/routing geometry so tidying wires or moving pins doesn't pollute electrical diffs; guards coupled CDF parameters and same-layer layout overlaps.
+- **Fail-Closed & Fast**: Refuses unsaved buffers, live `*.cdslck` locks, and non-allowlisted libraries; restores atomically via draft-and-publish with readback verification. Local dirty index skips unchanged views in `< 0.2s`, and a lazy headless daemon stays warm for 1 hour by default (`idle_timeout_s = 3600`, configurable; `0` disables auto-exit).
 
----
-
-## Why `oa-git`?
-
-Cadence OpenAccess files (`sch.oa`, `symbol.oa`, `layout.oa`) are proprietary binary databases. Putting them directly in Git yields `Binary files differ`, breaking PR code reviews, line-level blame, and branch merges.
-
-`oa-git` translates every CellView through **official documented Virtuoso SKILL APIs** (`db*`, `dd*`, `sch*`, `cdf*`, `rod*`, `tech*`) into a deterministic, human-reviewable snapshot directory under the unified `oa-git/2` manifest:
+## Snapshot Layout (`oa-git/2`)
 
 ```text
 snapshots/<library>/<cell>/<view>/
-├── manifest.json      # Unified oa-git/2 manifest + SHA-256 integrity bindings
-├── circuit.yaml       # [schematic] Electrical Truth: ports, nets, instances, primary params, derived state
-├── placement.yaml     # [schematic] Placement Geometry: instance xy/orient, pins, wires, labels, annotations, sheet
-├── symbol.yaml        # [symbol]    Pin contract (with pin_figure & port_order) + visual graphics & typed labels
-├── objects.jsonl      # [layout]    Deterministically sorted OA physical objects (one JSON object per line)
-├── definitions.jsonl  # [layout]    Deduplicated PCell / via / property definition table (when present)
-└── omissions.json     # [optional]  Audit file (present only if unsupported objects were encountered)
+├── manifest.json      # Unified oa-git/2 manifest + SHA-256 digests
+├── circuit.yaml       # [schematic] Electrical truth (ports, nets, instances, CDF params)
+├── placement.yaml     # [schematic] Placement geometry (xy/orient, wires, labels, annotations)
+├── symbol.yaml        # [symbol]    Pin contract, portOrder, shapes, and labels
+├── objects.jsonl      # [layout]    Deterministically sorted physical OA objects
+└── definitions.jsonl  # [layout]    Deduplicated PCell / via / property definitions (optional)
 ```
-
-Domain separation across all three views unlocks true Git collaboration:
-- **Schematic**: Moving devices or tidying wires leaves `circuit.yaml` and `electrical_sha256` untouched; concurrent sizing edits to coupled CDF parameters merge cleanly via `derived.status: stale` and recompute legitimately via `oagit restore --recompute-derived`.
-- **Symbol**: Moving pin labels or graphics produces zero diff under `--contract-only` / `--electrical-only`.
-- **Layout**: Pure routing, placement, and pin-geometry (`bbox`) edits produce zero diff under `--connectivity-only`.
-
----
 
 ## Installation
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
-.venv/bin/oagit --help
+.venv/bin/pytest   # offline test suite (no Cadence required)
 ```
 
-Run the offline test suite (zero Cadence dependency):
+## Quickstart
+
+Run inside any Virtuoso working directory containing `cds.lib`:
 
 ```bash
-.venv/bin/pytest
-```
+# 1. Zero-config init (git init, safe .gitignore for OA dirs, cds.lib discovery, PATH virtuoso probe)
+oagit init
 
----
-
-## Quickstart & Git-Like CLI Workflow
-
-### 3-Command Zero-Config Quickstart (Local Virtuoso Workstation)
-
-```bash
-cd my_virtuoso_workdir   # contains cds.lib
-oagit init               # auto git init, safe .gitignore, cds.lib discovery, PATH virtuoso probe
+# 2. Capture views (auto-detects schematic, symbol, layout, and custom layout_* views)
 oagit capture my_lib/opamp/schematic my_lib/opamp/symbol my_lib/opamp/layout
-git add snapshots/ .gitignore .oagit/config.json && git commit -m "feat: initial 3-view baseline"
+oagit capture my_lib/top/schematic --hier --include-symbols   # full hierarchy in one session
+
+# 3. Commit with standard Git
+git add snapshots/ .gitignore .oagit/config.json
+git commit -m "feat: initial baseline"
 ```
 
-### Workspace Sync, Init Flags & Remote SSH Workstation
-
-When you create a new OA library in the Virtuoso GUI, `oagit status` and `oagit capture` automatically pick it up from `cds.lib` at read time. To persist newly discovered libraries into `.oagit/config.json` and refresh the managed root-anchored `/<lib>/` `.gitignore` block, run:
+### Everyday Commands
 
 ```bash
-oagit init --sync
+oagit status                         # integrity, dirty index, OA locks, .gitignore checks
+oagit capture                        # incremental sync (--changed across all tracked views)
+oagit diff HEAD~1..HEAD --stat       # semantic diff across schematic, symbol, and layout
+oagit diff --electrical-only         # filter out pure placement/routing changes
+oagit diff --connectivity-only       # layout net/pin/PCell/via changes only
+oagit restore my_lib/opamp/schematic --target my_lib/opamp/schematic --overwrite
+oagit init --sync                    # refresh config & .gitignore after adding new OA libraries
+oagit daemon [start|stop|status]     # optional; daemon auto-starts lazily when needed
 ```
 
-Common `oagit init` options:
-- `--sync`: Re-parse `cds.lib`, update discovered libraries, and refresh the managed `.gitignore` block without overwriting unrelated settings.
-- `--no-git`: Skip automatic `git init` and `.gitignore` management.
-- `--no-auto-allow`: Do not auto-populate discovered repo-local libraries into `allow_libraries`.
-- `--no-auto-discover`: Disable automatic `./cds.lib` library and `PATH`/`$CDSHOME` Virtuoso detection.
-- `--v1`: Write legacy `.oagit.json` instead of the default v2 `.oagit/config.json`.
-- `--backend fixture`: Initialize an offline fixture workspace for local testing/demos without Virtuoso.
+*(For remote Virtuoso hosts over SSH, pass `--ssh-host <alias> --cds-lib /path/to/cds.lib` to `oagit init`.)*
 
-For a **Remote SSH Workstation** (local Git repo driving Virtuoso over SSH):
+## Documentation
 
-```bash
-oagit init \
-  --ssh-host eda-server \
-  --cds-lib /path/to/remote/cds.lib \
-  --allow-library my_sandbox_lib
-```
+- [Architecture & CLI Contract](docs/ARCHITECTURE.md)
+- [Symbol Reference (`symbol.yaml`)](docs/SYMBOL.md)
+- [Physical Layout Reference (`objects.jsonl`)](docs/LAYOUT.md)
+- [Headless Daemon, Dirty Index & Batch Spool](docs/DAEMON.md)
 
-*(Optionally add `--virtuoso-cmd virtuoso`, `--remote-workdir /path/to/remote/workdir`, or `--oa-lib my_lib=/path/to/remote/my_lib` if your remote setup uses non-default paths. Config is discovered upward from any subdirectory, just like `.git/`.)*
+## License
 
-### Capture Schematics, Symbols, Layouts, or Entire Hierarchies
-
-```bash
-# Capture all 3 views together (auto-detects schematic, symbol, layout, and custom layout_* views)
-oagit capture my_lib/opamp/schematic my_lib/opamp/symbol my_lib/opamp/layout
-
-# Custom non-standard layout view names (e.g. layout_pulsic) auto-detect, or override with --view-type layout
-oagit capture my_lib/amp/layout_pulsic
-
-# Entire schematic hierarchy + custom subcell symbols in ONE Virtuoso session
-oagit capture my_lib/top_adc/schematic --hier --include-symbols
-
-# Incremental sync: 0-arg capture defaults to --changed over all tracked CellViews (incl. layout.oa, < 0.2s skip!)
-oagit capture
-
-git add snapshots/
-git commit -m "chore: capture opamp schematic, symbol, and layout"
-```
-
-### Inspect Status & Semantic Diffs Across Git History
-
-```bash
-# Verify integrity, dirty index (sch.oa / symbol.oa / layout.oa), OA locks, and .gitignore health
-oagit status
-
-# Working snapshots vs HEAD, or Git range across ALL changed views (schematic + symbol + layout)
-oagit diff
-oagit diff HEAD~1..HEAD
-
-# Concise 1-line-per-view diff summary + layout layer histogram
-oagit diff HEAD~1..HEAD --stat
-
-# Domain-filtered semantic diffs
-oagit diff HEAD~1..HEAD --electrical-only     # schematic electrical truth & symbol pin contract
-oagit diff HEAD~1..HEAD --connectivity-only   # layout net/pin/PCell/via connectivity (plus schematic/symbol contract)
-oagit diff HEAD~1..HEAD --contract-only       # symbol pin contract only
-```
-
-### Three-Way Merge and Fail-Closed Atomic Restore
-
-```bash
-# Object-level three-way merge (schematic, symbol, or layout; pass --allow-spatial-overlap for intentional layout overlap)
-oagit merge my_lib/opamp/layout ours_dir/ theirs_dir/ -o merged_dir/
-
-# Revert snapshots with native git, then restore any view safely into an allowlisted library
-git checkout HEAD~1 -- snapshots/
-oagit restore my_lib/opamp/schematic --target my_sandbox_lib/opamp/schematic --overwrite --inline-readback
-oagit restore my_lib/opamp/symbol    --target my_sandbox_lib/opamp/symbol    --overwrite --inline-readback
-oagit restore my_lib/opamp/layout    --target my_sandbox_lib/opamp/layout    --overwrite
-```
-
-### Warm Daemon Lifecycle
-
-```bash
-oagit daemon start      # optional: daemon also auto-starts lazily on first capture/restore
-oagit daemon            # defaults to 'status'
-oagit daemon stop
-```
-
-The headless daemon stays warm for **`3600s` (1 hour)** by default (`daemon.idle_timeout_s`, configurable via `--idle-timeout-s <N>`; set `0` to disable idle auto-exit) and uses native Cadence SKILL `ipcSleep(1)` idle backoff to keep idle CPU usage minimal. Transient daemon state and SSH `ControlMaster` sockets (`.oagit/daemon/`, `.oagit/ssh/`, `.oagit/index.json`, `.oagit/index.lock`) are excluded automatically by the managed `.gitignore` block written by `oagit init`.
-
----
-
-## Architecture & Documentation
-
-- [Architecture & Wire Contracts (`oa-git/2`)](docs/ARCHITECTURE.md)
-- [Symbol Support (`symbol.yaml`)](docs/SYMBOL.md)
-- [Physical Layout Support (`objects.jsonl` / `definitions.jsonl`)](docs/LAYOUT.md)
-- [Lazy Daemon & Batch Spool (`oagit-spool/1`, `oagit-batch/1`)](docs/DAEMON.md)
-
-## Compliance & License
-
-- **License**: MIT ([LICENSE](LICENSE))
-- **OpenAccess Compliance**: Uses only documented Virtuoso SKILL APIs; never reads or writes raw `.oa` binary bytes.
+MIT ([LICENSE](LICENSE)) — clean-room implementation using documented Virtuoso SKILL APIs only.

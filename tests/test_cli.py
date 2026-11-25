@@ -4,7 +4,9 @@ from contextlib import ExitStack
 import json
 from dataclasses import replace
 from pathlib import Path
+import shutil
 import subprocess
+import sys
 import pytest
 
 from oa_git.cli import _git_snapshot, main
@@ -62,8 +64,13 @@ def invoke_json(args: list[str], capsys):
 
 def test_console_entrypoint_help_and_status_integrity_and_locks(tmp_path: Path, capsys) -> None:
     repo = Path(__file__).resolve().parents[1]
+    oagit_bin = Path(sys.executable).parent / "oagit"
+    if not oagit_bin.exists():
+        resolved = shutil.which("oagit")
+        assert resolved is not None, "oagit console script not found in active Python environment"
+        oagit_bin = Path(resolved)
     help_result = subprocess.run(
-        [str(repo / ".venv/bin/oagit"), "--help"],
+        [str(oagit_bin), "--help"],
         cwd=repo,
         capture_output=True,
         text=True,
