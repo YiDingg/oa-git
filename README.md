@@ -2,23 +2,6 @@
   <img src="assets/banner.svg" alt="oa-git — Git for Cadence OpenAccess" width="100%" />
 </p>
 
-<p align="center">
-  <a href="https://github.com/wsunskyr/oa-git/releases/latest"><img src="https://img.shields.io/github/v/release/wsunskyr/oa-git?style=flat-square&color=10b981" alt="Latest Release" /></a>
-  <a href="https://github.com/wsunskyr/oa-git/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/wsunskyr/oa-git/ci.yml?branch=main&style=flat-square&label=CI" alt="CI Status" /></a>
-  <a href="https://github.com/wsunskyr/oa-git/stargazers"><img src="https://img.shields.io/github/stars/wsunskyr/oa-git?style=flat-square&color=f59e0b&logo=github" alt="GitHub stars" /></a>
-  <a href="https://github.com/wsunskyr/oa-git/issues"><img src="https://img.shields.io/github/issues/wsunskyr/oa-git?style=flat-square&color=3b82f6" alt="Open Issues" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-10b981?style=flat-square" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/python-3.11%2B-3776ab?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+" />
-</p>
-
-<p align="center">
-  <a href="docs/ARCHITECTURE.md">Architecture</a>
-  &nbsp;·&nbsp; <a href="docs/SYMBOL.md">Symbol</a>
-  &nbsp;·&nbsp; <a href="docs/LAYOUT.md">Layout</a>
-  &nbsp;·&nbsp; <a href="docs/DAEMON.md">Daemon &amp; Batch</a>
-  &nbsp;·&nbsp; <a href="https://github.com/wsunskyr/oa-git/releases">Releases</a>
-</p>
-
 Git-native version control for **Cadence OpenAccess** (`sch.oa`, `symbol.oa`, and `layout.oa`) — turning Virtuoso binary databases into deterministic, human-readable `YAML` / `JSONL` snapshots using **official documented SKILL APIs only**.
 
 ```bash
