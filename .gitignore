@@ -1,0 +1,30 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# OpenAccess binaries & Virtuoso runtime files (never commit raw OA binaries)
+*.oa
+*.oa.cdslck*
+*.cdslck*
+*.lck
+*.oacache*
+*.*%
+CDS.log*
+libManager.log*
+panic.log*
+.cadence/
+thumbnail*.png
+
+# Local scratch / test workspaces
+.oagit-tmp/
+.test-tmp*/
+*.tmp

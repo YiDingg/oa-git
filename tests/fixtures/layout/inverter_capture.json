@@ -1,0 +1,292 @@
+{
+  "ok": true,
+  "error": null,
+  "cellview": {
+    "library": "work",
+    "cell": "inv_dut",
+    "view": "layout"
+  },
+  "modified_but_not_saved": false,
+  "metadata": {
+    "cellview_type": "maskLayout",
+    "dbu_per_uu": 1000.0,
+    "tech_lib": "tsmcN65"
+  },
+  "objects": [
+    {
+      "type": "net",
+      "name": "VDD",
+      "is_global": false,
+      "num_bits": 1,
+      "sig_type": "power"
+    },
+    {
+      "type": "net",
+      "name": "VSS",
+      "is_global": false,
+      "num_bits": 1,
+      "sig_type": "ground"
+    },
+    {
+      "type": "net",
+      "name": "IN",
+      "is_global": false,
+      "num_bits": 1,
+      "sig_type": "signal"
+    },
+    {
+      "type": "net",
+      "name": "OUT",
+      "is_global": false,
+      "num_bits": 1,
+      "sig_type": "signal"
+    },
+    {
+      "type": "pin",
+      "name": "IN",
+      "pin_name": "P__IN_0",
+      "net": "IN",
+      "direction": "input",
+      "layer": "M1",
+      "purpose": "pin",
+      "shape_kind": "rect",
+      "bbox": [[0.1, 2.2], [0.3, 2.6]],
+      "access_dir": ["left", "right"]
+    },
+    {
+      "type": "pin",
+      "name": "OUT",
+      "pin_name": "P__OUT_0",
+      "net": "OUT",
+      "direction": "output",
+      "layer": "M1",
+      "purpose": "pin",
+      "shape_kind": "rect",
+      "bbox": [[3.6, 2.2], [3.8, 2.6]],
+      "access_dir": ["right"]
+    },
+    {
+      "type": "pin",
+      "name": "VDD",
+      "pin_name": "P__VDD_0",
+      "net": "VDD",
+      "direction": "inputOutput",
+      "layer": "M1",
+      "purpose": "pin",
+      "shape_kind": "rect",
+      "bbox": [[0.0, 4.6], [4.0, 5.0]],
+      "access_dir": ["top", "left", "right"]
+    },
+    {
+      "type": "pin",
+      "name": "VSS",
+      "pin_name": "P__VSS_0",
+      "net": "VSS",
+      "direction": "inputOutput",
+      "layer": "M1",
+      "purpose": "pin",
+      "shape_kind": "rect",
+      "bbox": [[0.0, 0.0], [4.0, 0.4]],
+      "access_dir": ["bottom", "left", "right"]
+    },
+    {
+      "type": "instance",
+      "name": "MP0",
+      "lib": "tsmcN65",
+      "cell": "pch",
+      "view": "layout",
+      "xy": [1.0, 3.0],
+      "orient": "R0",
+      "is_pcell": true,
+      "pcell_params": {
+        "w": "1.2u",
+        "l": "60n",
+        "fingers": "2"
+      },
+      "pcell_param_types": {
+        "w": "string",
+        "l": "string",
+        "fingers": "string"
+      },
+      "connections": {
+        "D": "OUT",
+        "G": "IN",
+        "S": "VDD",
+        "B": "VDD"
+      },
+      "props": {
+        "userRole": "pullup"
+      },
+      "prop_types": {
+        "userRole": "string"
+      }
+    },
+    {
+      "type": "instance",
+      "name": "MN0",
+      "lib": "tsmcN65",
+      "cell": "nch",
+      "view": "layout",
+      "xy": [1.0, 0.8],
+      "orient": "R0",
+      "is_pcell": true,
+      "pcell_params": {
+        "w": "600n",
+        "l": "60n",
+        "fingers": "2"
+      },
+      "pcell_param_types": {
+        "w": "string",
+        "l": "string",
+        "fingers": "string"
+      },
+      "connections": {
+        "D": "OUT",
+        "G": "IN",
+        "S": "VSS",
+        "B": "VSS"
+      },
+      "props": {
+        "userRole": "pulldown"
+      },
+      "prop_types": {
+        "userRole": "string"
+      }
+    },
+    {
+      "type": "via",
+      "via_def": "M2_M1",
+      "via_kind": "stdVia",
+      "origin": [3.2, 2.4],
+      "orient": "R0",
+      "net": "OUT",
+      "name": "via_out_0",
+      "params": {
+        "cutRows": 2,
+        "cutColumns": 1,
+        "layer1Enc": [0.03, 0.04],
+        "layer2Enc": [0.03, 0.04]
+      }
+    },
+    {
+      "type": "via",
+      "via_def": "M1_PO",
+      "via_kind": "stdVia",
+      "origin": [0.6, 2.4],
+      "orient": "R0",
+      "net": "IN",
+      "name": "via_in_0",
+      "params": {
+        "cutRows": 1,
+        "cutColumns": 2,
+        "layer1Enc": [0.03, 0.03]
+      }
+    },
+    {
+      "type": "rect",
+      "layer": "M1",
+      "purpose": "drawing",
+      "bbox": [[0.0, 4.6], [4.0, 5.0]],
+      "net": "VDD"
+    },
+    {
+      "type": "rect",
+      "layer": "M1",
+      "purpose": "drawing",
+      "bbox": [[0.0, 0.0], [4.0, 0.4]],
+      "net": "VSS"
+    },
+    {
+      "type": "path_seg",
+      "layer": "M1",
+      "purpose": "drawing",
+      "begin_pt": [2.4, 1.2],
+      "end_pt": [2.4, 3.6],
+      "width": 0.14,
+      "begin_style": "extend",
+      "end_style": "extend",
+      "begin_ext": 0.05,
+      "end_ext": 0.05,
+      "net": "OUT"
+    },
+    {
+      "type": "path_seg",
+      "layer": "PO",
+      "purpose": "drawing",
+      "begin_pt": [0.6, 1.0],
+      "end_pt": [0.6, 3.8],
+      "width": 0.06,
+      "begin_style": "truncate",
+      "end_style": "truncate",
+      "begin_ext": 0.0,
+      "end_ext": 0.0,
+      "net": "IN"
+    },
+    {
+      "type": "path",
+      "layer": "M2",
+      "purpose": "drawing",
+      "points": [[2.4, 2.4], [3.2, 2.4], [3.7, 2.4]],
+      "width": 0.16,
+      "path_style": "truncateExtend",
+      "begin_ext": 0.0,
+      "end_ext": 0.0,
+      "net": "OUT"
+    },
+    {
+      "type": "polygon",
+      "layer": "NW",
+      "purpose": "drawing",
+      "points": [[0.2, 2.6], [3.8, 2.6], [3.8, 4.8], [0.2, 4.8]],
+      "net": "VDD"
+    },
+    {
+      "type": "label",
+      "text": "IN",
+      "xy": [0.2, 2.4],
+      "layer": "M1",
+      "purpose": "pin",
+      "justify": "centerCenter",
+      "orient": "R0",
+      "font": "stick",
+      "height": 0.1,
+      "label_type": "normalLabel",
+      "net": "IN"
+    },
+    {
+      "type": "label",
+      "text": "OUT",
+      "xy": [3.7, 2.4],
+      "layer": "M1",
+      "purpose": "pin",
+      "justify": "centerCenter",
+      "orient": "R0",
+      "font": "stick",
+      "height": 0.1,
+      "label_type": "normalLabel",
+      "net": "OUT"
+    },
+    {
+      "type": "boundary",
+      "boundary_kind": "prBoundary",
+      "points": [[0.0, 0.0], [4.0, 0.0], [4.0, 5.0], [0.0, 5.0]]
+    },
+    {
+      "type": "blockage",
+      "blockage_type": "routing",
+      "layer": "M3",
+      "points": [[0.5, 0.5], [3.5, 0.5], [3.5, 4.5], [0.5, 4.5]]
+    },
+    {
+      "type": "fig_group",
+      "name": "INV_CORE",
+      "origin": [0.0, 0.0],
+      "orient": "R0",
+      "group_type": "default"
+    }
+  ],
+  "properties": {
+    "designIntent": "cmos_inverter"
+  },
+  "omissions": []
+}

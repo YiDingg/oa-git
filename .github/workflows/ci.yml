@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package and dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run offline pytest suite
+        run: pytest
+
+      - name: CLI smoke check
+        run: |
+          oagit --help
+          python -m oa_git --help
+
+      - name: Build wheel and verify package contents
+        run: |
+          python -m pip wheel --no-deps --wheel-dir dist .
+          python - <<'PY'
+          import pathlib
+          import sys
+          import zipfile
+
+          wheels = sorted(pathlib.Path("dist").glob("oa_git-*.whl"))
+          if len(wheels) != 1:
+              print(f"ERROR: expected 1 wheel in dist/, found {len(wheels)}: {wheels}", file=sys.stderr)
+              sys.exit(1)
+
+          expected_skill = sorted(f"oa_git/skill/{p.name}" for p in pathlib.Path("src/oa_git/skill").glob("*.il"))
+          if len(expected_skill) != 10:
+              print(f"ERROR: expected 10 SKILL files in src/oa_git/skill/, found {len(expected_skill)}", file=sys.stderr)
+              sys.exit(1)
+
+          with zipfile.ZipFile(wheels[0]) as zf:
+              packaged_skill = sorted(
+                  name for name in zf.namelist()
+                  if name.startswith("oa_git/skill/") and name.endswith(".il")
+              )
+
+          if packaged_skill != expected_skill:
+              print("ERROR: packaged SKILL files do not match src/oa_git/skill/:", file=sys.stderr)
+              print(f"  expected: {expected_skill}", file=sys.stderr)
+              print(f"  packaged: {packaged_skill}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"Wheel OK ({wheels[0].name}): verified {len(packaged_skill)} SKILL files.")
+          PY
+
+      - name: Static SKILL API hygiene check
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          skill_files = sorted(pathlib.Path("src/oa_git/skill").glob("*.il"))
+          if not skill_files:
+              print("ERROR: no SKILL files found under src/oa_git/skill/", file=sys.stderr)
+              sys.exit(1)
+
+          forbidden = re.compile(r"(schHi|leHi|geHi|cdfGetParam|dbReplaceProp)")
+          violations = []
+          for path in skill_files:
+              for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                  for match in forbidden.finditer(line):
+                      violations.append(f"{path}:{lineno}: forbidden API '{match.group(0)}'")
+
+          if violations:
+              print("Forbidden GUI or private SKILL APIs detected:", file=sys.stderr)
+              for item in violations:
+                  print(f"  - {item}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"SKILL hygiene OK ({len(skill_files)} files checked).")
+          PY

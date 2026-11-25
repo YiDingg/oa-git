@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oa-git"
+version = "0.1.0"
+description = "Deterministic text serialization, semantic diff, 3-way merge, and fail-closed Git version control for Cadence OpenAccess schematics (sch.oa), symbols (symbol.oa), and layouts (layout.oa)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+keywords = [
+    "eda",
+    "cadence",
+    "virtuoso",
+    "openaccess",
+    "git",
+    "ic-design",
+    "analog",
+    "schematic",
+    "layout",
+    "skill",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/wsunskyr/oa-git"
+Repository = "https://github.com/wsunskyr/oa-git"
+Issues = "https://github.com/wsunskyr/oa-git/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+oagit = "oa_git.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+oa_git = ["skill/*.il"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
