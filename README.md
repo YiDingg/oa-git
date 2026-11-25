@@ -31,6 +31,8 @@ oagit capture my_lib/opamp/schematic my_lib/opamp/symbol my_lib/opamp/layout
 git add snapshots/ .gitignore .oagit/config.json && git commit -m "feat: initial baseline"
 ```
 
+> **Python >= 3.11 required.** On RHEL/Rocky or EDA servers where default `python3` on `PATH` is older (e.g., 3.8/3.9 from system packages or EDA toolchains), create an isolated environment with `python3.12 -m venv .venv` or [`uv`](https://docs.astral.sh/uv/) (`uv venv --python 3.12 --seed .venv`), install inside `.venv`, and optionally symlink `.venv/bin/oagit` into `~/.local/bin/oagit`.
+
 ## How It Works
 
 <p align="center">
