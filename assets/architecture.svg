@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img" aria-label="How oa-git Works">
+  <defs>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 8.5 5 L 1 8.5 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 8.5 5 L 1 8.5 z" fill="#d97706"/>
+    </marker>
+    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="118%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+    <style>
+      .sans { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    </style>
+  </defs>
+
+  <!-- Clean Alabaster Canvas -->
+  <rect width="1200" height="500" rx="18" fill="#fafaf8"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="498.5" rx="17.25" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ================= MINIMAL HEADER ================= -->
+  <text x="48" y="54" class="sans" font-size="26" font-weight="800" fill="#0f172a" letter-spacing="-0.5">How oa-git Works</text>
+  <text x="48" y="80" class="sans" font-size="14.5" fill="#475569">Design in Cadence Virtuoso. Version control in standard Git. oa-git converts cleanly between the two.</text>
+
+  <!-- ================= STAGE 1: CADENCE VIRTUOSO ================= -->
+  <g transform="translate(48, 112)">
+    <rect x="0" y="0" width="290" height="286" rx="16" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="24" y="38" class="sans" font-size="18" font-weight="800" fill="#92400e">1. Cadence Virtuoso</text>
+    <text x="24" y="60" class="sans" font-size="13" fill="#b45309">Your IC design workspace</text>
+
+    <!-- 3 big clear view tiles -->
+    <rect x="20" y="82" width="250" height="44" rx="10" fill="#ffffff" stroke="#fde68a" stroke-width="1.2"/>
+    <text x="36" y="109" class="sans" font-size="14.5" font-weight="700" fill="#0f172a">Schematic</text>
+    <text x="252" y="109" class="mono" font-size="13" fill="#b45309" text-anchor="end">sch.oa</text>
+
+    <rect x="20" y="138" width="250" height="44" rx="10" fill="#ffffff" stroke="#fde68a" stroke-width="1.2"/>
+    <text x="36" y="165" class="sans" font-size="14.5" font-weight="700" fill="#0f172a">Symbol</text>
+    <text x="252" y="165" class="mono" font-size="13" fill="#b45309" text-anchor="end">symbol.oa</text>
+
+    <rect x="20" y="194" width="250" height="44" rx="10" fill="#ffffff" stroke="#fde68a" stroke-width="1.2"/>
+    <text x="36" y="221" class="sans" font-size="14.5" font-weight="700" fill="#0f172a">Layout</text>
+    <text x="252" y="221" class="mono" font-size="13" fill="#b45309" text-anchor="end">layout.oa</text>
+
+    <text x="145" y="268" class="sans" font-size="12.5" fill="#92400e" text-anchor="middle">Binary OA files stay local (gitignored)</text>
+  </g>
+
+  <!-- ================= STAGE 2: OA-GIT BRIDGE (CENTER) ================= -->
+  <g transform="translate(420, 112)">
+    <rect x="0" y="0" width="340" height="286" rx="16" fill="#ffffff" stroke="#10b981" stroke-width="2" filter="url(#cardShadow)"/>
+    <rect x="24" y="0" width="292" height="4.5" rx="2.25" fill="#10b981"/>
+
+    <text x="170" y="40" class="sans" font-size="20" font-weight="800" fill="#0f172a" text-anchor="middle">2. oa-git</text>
+    <text x="170" y="62" class="sans" font-size="13" fill="#047857" text-anchor="middle">Official SKILL APIs · Zero Binary Parsing</text>
+
+    <!-- Capture flow box -->
+    <rect x="24" y="84" width="292" height="54" rx="11" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.3"/>
+    <text x="40" y="108" class="mono" font-size="14" font-weight="700" fill="#047857">oagit capture  →</text>
+    <text x="40" y="127" class="sans" font-size="12.5" fill="#065f46">Read-only export to deterministic text</text>
+
+    <!-- Restore flow box -->
+    <rect x="24" y="152" width="292" height="54" rx="11" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.3"/>
+    <text x="40" y="176" class="mono" font-size="14" font-weight="700" fill="#b45309">←  oagit restore</text>
+    <text x="40" y="195" class="sans" font-size="12.5" fill="#92400e">Safe atomic write-back with lock check</text>
+
+    <!-- Compact feature pills -->
+    <rect x="24" y="222" width="140" height="44" rx="9" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.1"/>
+    <text x="94" y="241" class="sans" font-size="12.5" font-weight="700" fill="#1e293b" text-anchor="middle">Warm Daemon</text>
+    <text x="94" y="257" class="sans" font-size="11.5" fill="#64748b" text-anchor="middle">Local or SSH</text>
+
+    <rect x="176" y="222" width="140" height="44" rx="9" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.1"/>
+    <text x="246" y="241" class="sans" font-size="12.5" font-weight="700" fill="#1e293b" text-anchor="middle">Fail-Closed</text>
+    <text x="246" y="257" class="sans" font-size="11.5" fill="#64748b" text-anchor="middle">Safe .cdslck guard</text>
+  </g>
+
+  <!-- ================= STAGE 3: STANDARD GIT ================= -->
+  <g transform="translate(842, 112)">
+    <rect x="0" y="0" width="310" height="286" rx="16" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="24" y="38" class="sans" font-size="18" font-weight="800" fill="#1e3a8a">3. Standard Git</text>
+    <text x="24" y="60" class="sans" font-size="13" fill="#1d4ed8">Plain-text snapshots (offline)</text>
+
+    <!-- Clean file list card -->
+    <rect x="20" y="82" width="270" height="114" rx="10" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+    <text x="34" y="108" class="mono" font-size="13" font-weight="700" fill="#0f172a">snapshots/</text>
+    <text x="38" y="132" class="mono" font-size="11.8" fill="#047857">├── circuit.yaml + placement.yaml</text>
+    <text x="38" y="155" class="mono" font-size="11.8" fill="#1d4ed8">├── symbol.yaml</text>
+    <text x="38" y="178" class="mono" font-size="11.8" fill="#b45309">└── objects.jsonl</text>
+
+    <!-- 3 clear action chips -->
+    <rect x="20" y="210" width="128" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+    <text x="84" y="230" class="mono" font-size="12.5" font-weight="700" fill="#1e40af" text-anchor="middle">oagit diff</text>
+
+    <rect x="162" y="210" width="128" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+    <text x="226" y="230" class="mono" font-size="12.5" font-weight="700" fill="#1e40af" text-anchor="middle">oagit merge</text>
+
+    <text x="155" y="268" class="mono" font-size="12.5" fill="#1e3a8a" text-anchor="middle">git commit · branch · revert · PR</text>
+  </g>
+
+  <!-- ================= CONNECTING ARROWS ================= -->
+  <!-- Between Stage 1 & Stage 2 -->
+  <line x1="344" y1="223" x2="412" y2="223" stroke="#059669" stroke-width="2.6" marker-end="url(#arrowGreen)"/>
+  <line x1="414" y1="291" x2="346" y2="291" stroke="#d97706" stroke-width="2.6" marker-end="url(#arrowAmber)"/>
+
+  <!-- Between Stage 2 & Stage 3 -->
+  <line x1="766" y1="223" x2="834" y2="223" stroke="#059669" stroke-width="2.6" marker-end="url(#arrowGreen)"/>
+  <line x1="836" y1="291" x2="768" y2="291" stroke="#d97706" stroke-width="2.6" marker-end="url(#arrowAmber)"/>
+
+  <!-- ================= BOTTOM 3-STEP WORKFLOW STRIP ================= -->
+  <rect x="48" y="424" width="1104" height="46" rx="12" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="218" y="452" class="sans" font-size="13.5" font-weight="600" fill="#334155" text-anchor="middle">① Edit schematic or layout in Virtuoso</text>
+  <text x="415" y="452" class="sans" font-size="15" font-weight="700" fill="#94a3b8" text-anchor="middle">→</text>
+  <text x="600" y="452" class="sans" font-size="13.5" font-weight="600" fill="#047857" text-anchor="middle">② Run oagit capture &amp; git commit</text>
+  <text x="795" y="452" class="sans" font-size="15" font-weight="700" fill="#94a3b8" text-anchor="middle">→</text>
+  <text x="975" y="452" class="sans" font-size="13.5" font-weight="600" fill="#1d4ed8" text-anchor="middle">③ Review, revert, &amp; oagit restore</text>
+</svg>
